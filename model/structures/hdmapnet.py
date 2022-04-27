@@ -2,13 +2,13 @@ import torch
 from torch import nn
 from easydict import EasyDict
 
-from model.utils.ipm import IPM
+from model.base_models.ipm import IPM
 from model.encoders.neural_view_encoder import NeuralViewEncoder
 from model.structures.pointpillar import PointPillarEncoder
 from model.encoders.bev_encoder import BevEncoder
 from model.encoders.camera_encoder import CameraEncoder
 from tools.model_utils import gen_dx_bx
-from ..heads.base_head import BaseHead
+from model.heads.base_head import BaseHead
 
 
 class HDMapNet(nn.Module):
