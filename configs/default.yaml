@@ -1,0 +1,50 @@
+data:
+  image_size: [ 128, 352 ]
+  xbound: [ -30.0, 30.0, 0.15 ]
+  ybound: [ -15.0, 15.0, 0.15 ]
+  zbound: [ -10.0, 10.0, 20.0 ]
+  dbound: [ 4.0, 45.0, 1.0 ]
+  thickness: 5
+  angle_class: 36
+  version: v1.0-trainval
+  dataroot: /weka-jd/prod/permanent/bixiao/private/Workspace/Data/NuScenes-HD
+  batch_size: 10
+  eval_batch_size: 10
+  num_workers: 1
+  pin_memory: false
+  num_channels: 4
+  ffrecord: true
+  distributed: true
+  cams: [ 'CAM_FRONT_LEFT', 'CAM_FRONT', 'CAM_FRONT_RIGHT', 'CAM_BACK_LEFT', 'CAM_BACK', 'CAM_BACK_RIGHT' ]
+  img_origin_w: 1600
+  img_origin_h: 900
+
+model:
+  method: HDMapNet_fusion
+  embedded_dim: 16
+  cam_channel: 64
+  downsample: 16
+  loss:
+    pos_weight: 2.13
+    delta_v: 0.5
+    delta_d: 3.0
+    scale_seg: 1.0
+    scale_var: 1.0
+    scale_dist: 1.0
+    scale_direction: 0.2
+
+optimization:
+  lr: 0.001
+  weight_decay: 0.0000001
+  lr_drop_step: 20
+  lr_drop_rate: 0.8
+  max_grad_norm: 5.0
+
+runtime:
+  nepochs: 10000
+  seed: 42
+  dist_backend: nccl
+  output_dir: output/default
+  resume: null
+  eval_and_save_gap: 5
+  device: cuda
