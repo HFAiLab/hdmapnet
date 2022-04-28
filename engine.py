@@ -132,7 +132,7 @@ def main(local_rank, config):
         if rank in [-1, 0] and hfai.receive_suspend_command():
             model_name = "latest.pt"
             distribute_utils.save_train_model_state(epoch, lr_scheduler, model, model_name, optimizer, output_dir,
-                                                   config.runtime)
+                                                    config.runtime)
             time.sleep(5)
             hfai.go_suspend()
 

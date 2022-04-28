@@ -1,4 +1,5 @@
 data:
+  version: v1.0-trainval
   image_size: [ 128, 352 ]
   xbound: [ -30.0, 30.0, 0.15 ]
   ybound: [ -15.0, 15.0, 0.15 ]
@@ -6,8 +7,6 @@ data:
   dbound: [ 4.0, 45.0, 1.0 ]
   thickness: 5
   angle_class: 36
-  version: v1.0-trainval
-  dataroot: /weka-jd/prod/permanent/bixiao/private/Workspace/Data/NuScenes-HD
   batch_size: 10
   eval_batch_size: 10
   num_workers: 1
@@ -45,6 +44,6 @@ runtime:
   seed: 42
   dist_backend: nccl
   output_dir: output/default
-  resume: null
+  resume: output/refactor/0015.pt
   eval_and_save_gap: 5
   device: cuda
