@@ -36,7 +36,10 @@ Then run `python demo.py`
 
 ## Samples
 
+sample 1
 ![sample1](pics/sample1.png)
+
+sample 2
 ![sample2](pics/sample2.png)
 
 ## References

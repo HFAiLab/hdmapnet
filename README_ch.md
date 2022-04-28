@@ -39,7 +39,10 @@
 
 下面是一些可视化效果：
 
+可视化效果１
 ![sample1](pics/sample1.png)
+
+可视化效果２
 ![sample2](pics/sample2.png)
 
 ## References
