@@ -1,72 +1,63 @@
 
 # CLIP-GEN
 
-[简体中文][[English]](README_en.md)
+[简体中文][[English]](README.md)
 
-本项目在萤火二号集群上用 PyTorch 实现了论文 《CLIP-GEN: Language-Free Training of a Text-to-Image Generator with CLIP》。
+本项目在萤火二号集群上用 PyTorch 实现了论文 《HDMapNet: A Local Semantic Map Learning and Evaluation Framework》。
 
-![clip-gen](assets/clip-gen.png)
+**[[Paper](https://arxiv.org/abs/2107.06307)] [[Devkit Page](https://tsinghua-mars-lab.github.io/HDMapNet/)] [[5-min video](https://www.youtube.com/watch?v=AJ-rToTN8y8)]**
 
-CLIP-GEN 是一个 Language-Free 的文本生成图像的方法，它不依赖图文训练样本，通过预训练 CLIP 模型的强大表征能力，只需要图片数据就可以训练出一个文本生成图像的模型。该方法的基本原理是：CLIP-GEN 首先会训练一个 VQ-GAN，把图片映射到离散空间；然后再训练一个 GPT 模型，把 CLIP embedding 映射到 VQ-GAN 的离散空间；由于在 CLIP 中，文本和图像共享一个特征空间，在 inference 的时候我们就可以通过同样的方法把文本映射到 VQ-GAN 的离散空间，然后 decode 为 RGB 图像。
+![HDMapNet](TODO)
 
+高清地图（HD map）构建是自动驾驶的关键问题。这个问题通常涉及收集高质量的点云，融合同一场景的多个点云，标注地图元素，不断更新地图。然而，这条管道需要大量的人力和资源，这限制了它的可扩展性。此外，传统的高清地图加上厘米级的精确定位，这在许多场景中是不可靠的。在本文中，我们认为在线地图学习基于本地传感器观察动态构建高清地图，是一种比传统的预注释高清地图更可扩展的方式来为自动驾驶车辆提供语义和几何先验。同时，我们介绍了一种名为 HDMapNet 的在线地图学习方法。它对来自周围摄像机和/或来自 LiDAR 的点云的图像特征进行编码，并在鸟瞰图中预测矢量化地图元素。我们在 nuScenes 数据集上对 HDMapNet 进行了基准测试，并表明在所有设置中，它的性能都优于基线方法。值得注意的是，我们基于融合的 HDMapNet 在所有指标上都优于现有方法 50% 以上。为了加速未来的研究，我们开发了定制的指标来评估地图学习性能，包括语义级别和实例级别的指标。通过引入这种方法和指标，我们邀请社区研究这个新颖的地图学习问题。我们将发布我们的代码和评估套件以促进未来的开发。我们在 nuScenes 数据集上对 HDMapNet 进行了基准测试，并表明在所有设置中，它的性能都优于基线方法。值得注意的是，我们基于融合的 HDMapNet 在所有指标上都优于现有方法 50% 以上。为了加速未来的研究，我们开发了定制的指标来评估地图学习性能，包括语义级别和实例级别的指标。通过引入这种方法和指标，我们邀请社区研究这个新颖的地图学习问题。我们将发布我们的代码和评估套件以促进未来的开发。我们在 nuScenes 数据集上对 HDMapNet 进行了基准测试，并表明在所有设置中，它的性能都优于基线方法。值得注意的是，我们基于融合的 HDMapNet 在所有指标上都优于现有方法 50% 以上。为了加速未来的研究，我们开发了定制的指标来评估地图学习性能，包括语义级别和实例级别的指标。通过引入这种方法和指标，我们邀请社区研究这个新颖的地图学习问题。我们将发布我们的代码和评估套件以促进未来的开发。包括语义级和实例级。通过引入这种方法和指标，我们邀请社区研究这个新颖的地图学习问题。我们将发布我们的代码和评估套件以促进未来的开发。包括语义级和实例级。通过引入这种方法和指标，我们邀请社区研究这个新颖的地图学习问题。我们将发布我们的代码和评估套件以促进未来的开发。
 
 ## Requirements
 
 - hfai
 - torch>=1.8
+- nuscenes-devkit
+
+## Preparation
+
+在　[config](configs/default.yaml)　中设置 `data.dataroot`, `data.version`, `data.batch_size`。
 
 ## Training
 
-支持的数据集：`coco`, `imagenet`, `googlecc`
+执行 `python train.py`
 
-1. 下载 CLIP 预训练模型
+## Evaluation
 
-    下载 [CLIP](TODO) 后放至 `pretrained/clip_vit_b32.pt`，该预训练模型来自 OpenAI.
-
-2. 在 COCO 上训练 VQGAN
-
-    ```shell
-    hfai python train_vqgan.py --ds coco -- -n 1 -p 30
-    ```
-
-3. 在 COCO 上训练 Conditional GPT
-
-    ```shell
-    hfai python train_gpt.py --ds coco --vqgan_ckpt /path/to/vqgan/ckpt -- -n 4 -p 30
-    ```
+执行 `python eval.py` 
 
 ## Demo
 
-下载在 COCO 上训练好的 [VQGAN](TODO) 和 [GPT](TODO) 模型，分别放到 `pretrained/vqgan_coco.pt` 和 `pretrained/gpt_coco.pt`；然后运行：
+下载训练好的模型 [HDMapNet_fusion](TODO)，设置[config](configs/default.yaml)中的 `runtime.resume` 为模型路径。
 
-```shell
-python demo.py --text "A city bus driving on the city street" --out "bus.jpg"
-```
-
-**NOTE**: demo 的运行不依赖 hfai，用户可以在装有 PyTorch 的环境下直接使用
+然后执行 `python demo.py`
 
 ## Samples
 
-下面是一些文本生成图像的样本：
+下面是一些可视化效果：
 
-![tower](assets/tower.jpg)
-![bus](assets/bus.jpg)
-![living](assets/living.jpg)
-![train](assets/train.jpg)
-![skiing](assets/skiing.jpg)
+![TODO](TODO)
+![TODO](TODO)
 
 ## References
 
-- [taming-transformers](https://github.com/CompVis/taming-transformers)
-- [CLIP](https://github.com/openai/CLIP)
+- [lift-splat-shoot](https://github.com/nv-tlabs/lift-splat-shoot)
+- [HDMapNet](https://tsinghua-mars-lab.github.io/HDMapNet)
+
 
 ## Citation
 
 ```
-@article{wang2022clip,
-  title={CLIP-GEN: Language-Free Training of a Text-to-Image Generator with CLIP},
-  author={Wang, Zihao and Liu, Wei and He, Qian and Wu, Xinglong and Yi, Zili},
-  journal={arXiv preprint arXiv:2203.00386},
-  year={2022}
+@misc{li2021hdmapnet,
+    title={HDMapNet: An Online HD Map Construction and Evaluation Framework},
+    author={Qi Li and Yue Wang and Yilun Wang and Hang Zhao},
+    year={2021},
+    eprint={2107.06307},
+    archivePrefix={arXiv},
+    primaryClass={cs.CV}
 }
 ```
+

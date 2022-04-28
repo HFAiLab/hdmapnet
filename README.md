@@ -30,9 +30,9 @@ Run `python eval.py`
 
 ## Demo
 
-Download pretrained model [HDMapNet_fusion](TODO)
+Download pretrained model [HDMapNet_fusion](TODO), and set  `runtime.resume` as the path of the pretrained model in [config](configs/default.yaml). 
 
-TODO...
+Then run `python demo.py`
 
 ## Samples
 
