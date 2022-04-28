@@ -19,7 +19,7 @@
 
 ## Preparation
 
-在　[config](configs/default.yaml)　中设置 `data.dataroot`, `data.version`, `data.batch_size`。
+在[config](configs/default.yaml)中设置 `data.dataroot`, `data.version`, `data.batch_size`。
 
 ## Training
 
@@ -31,7 +31,7 @@
 
 ## Demo
 
-下载训练好的模型 [HDMapNet_fusion](TODO)，设置[config](configs/default.yaml)中的 `runtime.resume` 为模型路径。
+下载训练好的模型[HDMapNet_fusion](TODO)，设置[config](configs/default.yaml)中的 `runtime.resume` 为模型路径。
 
 然后执行 `python demo.py`
 
