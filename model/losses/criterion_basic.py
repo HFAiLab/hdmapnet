@@ -9,7 +9,6 @@ class Criterion(nn.Module):
         super(Criterion, self).__init__()
         self.loss_config = loss_config
         self.weight_dict = {}
-        print('loss_config', loss_config)
         self.semantic_loss = CrossEntropyLoss(loss_config.semantic)
         self.direction_loss = CrossEntropyLoss(loss_config.direction)
         self.instance_loss = InstanceLoss(loss_config.instance)
