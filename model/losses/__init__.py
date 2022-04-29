@@ -1,5 +1,9 @@
-from .criterion import Criterion
+from .criterion import Criterion as CriterionHDMap
+from .criterion_basic import Criterion as CriterionBasic
 
 
-def build_losses(heads_config, device):
-    return Criterion(heads_config, device)
+def build_criterion(model_conf):
+    if model_conf.loss_type == 'basic':
+        return CriterionBasic(model_conf.basic_loss)
+    else:
+        return CriterionHDMap(model_conf)

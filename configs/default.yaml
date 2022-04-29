@@ -23,7 +23,8 @@ model:
   embedded_dim: 16
   cam_channel: 64
   downsample: 16
-  loss:
+  loss_type: basic
+  hdmap_loss:
     pos_weight: 2.13
     delta_v: 0.5
     delta_d: 3.0
@@ -31,6 +32,23 @@ model:
     scale_var: 1.0
     scale_dist: 1.0
     scale_direction: 0.2
+  basic_loss:
+    semantic:
+      out_dim: 4
+      loss_weight: 5.0
+      weight: [ 1.0, 1.0, 3.0, 5.0 ]
+    direction:
+      out_dim: 37
+      loss_weight: 4.0
+      ignore_index: 0
+    instance:
+      out_dim: 12
+      loss_weight: 1.0
+      delta_var: 0.5
+      delta_dist: 3.0
+      ignore_index: 0
+      alpha: 1.0
+      beta: 1.0
 
 optimization:
   lr: 0.001
@@ -44,6 +62,9 @@ runtime:
   seed: 42
   dist_backend: nccl
   output_dir: output/default
-  resume: output/refactor/0015.pt
-  eval_and_save_gap: 5
+  resume: null
+  eval_and_save_gap: 1
   device: cuda
+  visualizer: null
+  visualize_dir: output/visualize
+  vis_scale_factor: 0.01

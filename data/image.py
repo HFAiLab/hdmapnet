@@ -1,10 +1,30 @@
 import torch
 import torchvision
 
+
+class NormalizeInverse(torchvision.transforms.Normalize):
+    #  https://discuss.pytorch.org/t/simple-way-to-inverse-transform-normalization/4821/8
+    def __init__(self, mean, std):
+        mean = torch.as_tensor(mean)
+        std = torch.as_tensor(std)
+        std_inv = 1 / (std + 1e-7)
+        mean_inv = -mean * std_inv
+        super().__init__(mean=mean_inv, std=std_inv)
+
+    def __call__(self, tensor):
+        return super().__call__(tensor.clone())
+
+
 normalize_img = torchvision.transforms.Compose((
     torchvision.transforms.ToTensor(),
     torchvision.transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                      std=[0.229, 0.224, 0.225]),
+))
+
+denormalize_img = torchvision.transforms.Compose((
+    NormalizeInverse(mean=[0.485, 0.456, 0.406],
+                     std=[0.229, 0.224, 0.225]),
+    torchvision.transforms.ToPILImage(),
 ))
 
 
@@ -36,8 +56,20 @@ class Transform:
         resize_dims = (fW, fH)
         return resize, resize_dims
 
+    def filter_instance_id(self, instance_gt):
+        curr_id = 0
+        max_id = torch.max(instance_gt)
+        while curr_id < max_id:
+            if not torch.any(instance_gt == curr_id):
+                instance_gt[instance_gt > curr_id] -= 1
+                max_id -= 1
+            else:
+                curr_id += 1
+        return instance_gt
+
     def __call__(self, data_dict):
         imgs = data_dict['imgs']
+        data_dict['instance_gt'] = self.filter_instance_id(data_dict['instance_gt'])
         transformed_imgs = []
         post_rots = []
         post_trans = []

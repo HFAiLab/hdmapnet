@@ -10,7 +10,7 @@ from data import compile_data, compile_dataloader
 from evaluation.iou import eval_iou, get_batch_iou, onehot_encoding
 from model import compile_model
 from tools import distribute_utils
-from model.losses.criterion import Criterion
+from model.losses import build_criterion
 
 
 def main(local_rank, config):
@@ -67,7 +67,7 @@ def main(local_rank, config):
                                                    optimization_config['lr_drop_rate'])
 
     # init losses
-    criterion = Criterion(config.model)
+    criterion = build_criterion(config.model)
     criterion.cuda()
 
     # load if latest.pt model exists
@@ -84,7 +84,9 @@ def main(local_rank, config):
             config.runtime.start_epoch = checkpoint['epoch'] + 1
 
     if config.runtime.eval:
-        iou = eval_iou(model, val_loader)
+        if config.runtime.visualizer:
+            logging.info(f'visualize samples saved in {config.runtime.visualize_dir}')
+        iou = eval_iou(model, val_loader, visualizer=config.runtime.visualizer)
         logging.info(
             f"EVAL:    "
             f"IOU: {np.array2string(iou[1:].numpy(), precision=3, floatmode='fixed')}")
@@ -105,13 +107,18 @@ def main(local_rank, config):
             semantic, embedding, direction = model(data_dict)
             forward_t = time()
 
-            final_loss = criterion(semantic, embedding, direction, data_dict)
+            pred_dict = {
+                'semantic': semantic,
+                'direction': direction,
+                'instance': embedding
+            }
+            final_loss = criterion(pred_dict, data_dict)
             final_loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), config.optimization.max_grad_norm)
             optimizer.step()
             backward_t = time()
 
-            if rank in [-1, 0] and batchi % (batch_len // 10 + 1) == 0:
+            if rank in [-1, 0] and batchi % (batch_len // 30 + 1) == 0:
                 intersects, union = get_batch_iou(onehot_encoding(semantic), data_dict['semantic_gt'].float())
                 iou = intersects / (union + 1e-7)
                 logging.info(

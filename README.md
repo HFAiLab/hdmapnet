@@ -18,7 +18,7 @@ This is a PyTorch implementation of paper "HDMapNet: A Local Semantic Map Learni
 
 ## Preparation
 
-Set `data.dataroot`, `data.version`, `data.batch_size` in[config](configs/default.yaml).
+Set `data.dataroot`, `data.version`, `data.batch_size` in　[config](configs/default.yaml).
 
 ## Training
 

@@ -9,7 +9,7 @@ def onehot_encoding(logits, dim=1):
     return one_hot
 
 
-def eval_iou(model, val_loader):
+def eval_iou(model, val_loader, visualizer=None):
     model.eval()
     total_intersects = 0
     total_union = 0
@@ -18,6 +18,13 @@ def eval_iou(model, val_loader):
             data_dict = {k: v.cuda() for k, v in data_dict.items()}
             semantic, embedding, direction = model(data_dict)
             semantic_gt = data_dict['semantic_gt'].float()
+            if visualizer is not None:
+                pred_dict = {
+                    'semantic': semantic,
+                    'direction': direction,
+                    'instance': embedding
+                }
+                visualizer.visualize_batch(data_dict, pred_dict)
             intersects, union = get_batch_iou(onehot_encoding(semantic), semantic_gt)
             total_intersects += intersects
             total_union += union
