@@ -8,6 +8,7 @@ import cv2
 from easydict import EasyDict
 
 from data.image import denormalize_img
+from evaluation.iou import label_onehot_encoding
 
 
 class DataVisualizer:
@@ -68,14 +69,14 @@ class DataVisualizer:
                 )
             # visualize input img
             for imgi, img in enumerate(imgs[sample_i]):
-                    plt.subplot(gs[2 + imgi // 3, imgi % 3])
-                    cam_img = denormalize_img(img)
-                    # flip the bottom images
-                    if imgi > 2:
-                        cam_img = cam_img.transpose(Image.FLIP_LEFT_RIGHT)
-                    plt.imshow(cam_img)
-                    plt.axis('off')
-                    plt.annotate(cams[imgi].replace('_', ' '), (0.01, 0.92), xycoords='axes fraction', color='r')
+                plt.subplot(gs[2 + imgi // 3, imgi % 3])
+                cam_img = denormalize_img(img)
+                # flip the bottom images
+                if imgi > 2:
+                    cam_img = cam_img.transpose(Image.FLIP_LEFT_RIGHT)
+                plt.imshow(cam_img)
+                plt.axis('off')
+                plt.annotate(cams[imgi].replace('_', ' '), (0.01, 0.92), xycoords='axes fraction', color='r')
             print(f'saving to {output_file}')
             plt.savefig(output_file)
         plt.close()
@@ -86,9 +87,9 @@ class DataVisualizer:
         ax.get_yaxis().set_ticks([])
         if label_type in ['instance']:
             if len(tensor_obj.shape) == 2:
-                tensor_obj = tensor_obj.unsqueeze(-1)
-            else:
-                tensor_obj = np.transpose(tensor_obj, (1, 2, 0))
+                # tensor_obj = tensor_obj.unsqueeze(-1)
+                tensor_obj = label_onehot_encoding(tensor_obj, torch.max(tensor_obj) + 1)
+            tensor_obj = np.transpose(tensor_obj, (1, 2, 0))
             show_img = self.visualize_instance(tensor_obj, semantic_tensor)
         else:
             show_img = self.visualize_tensor(tensor_obj, color_map, semantic_tensor)
@@ -133,4 +134,3 @@ class DataVisualizer:
         viz_img = np.array(255 * viz_img / cls).astype(np.uint8)
         mask = (viz_img == 0)
         return mask, viz_img
-
