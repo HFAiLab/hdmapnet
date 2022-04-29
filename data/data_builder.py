@@ -1,18 +1,15 @@
 import torch
 from torch.utils.data import DistributedSampler
-import sys
 from ffrecord.torch import DataLoader
 from .image import Transform
 
-sys.path.insert(0, "/ceph-jd/prod/jupyter/bixiao/notebooks/Workspace/Codes/HFai/hfai_new/datasets/hfai")
-import datasets
-
+from hfai import datasets
 
 def compile_data(data_conf):
     version = data_conf['version'].split('-')[-1]
     transform = Transform(data_conf)
-    dataset_train = datasets.NuScenesTest(split='train', transform=transform, version=version)
-    dataset_val = datasets.NuScenesTest(split='val', transform=transform, version=version)
+    dataset_train = datasets.NuScenes(split='train', transform=transform, version=version)
+    dataset_val = datasets.NuScenes(split='val', transform=transform, version=version)
     return dataset_train, dataset_val
 
 
