@@ -9,10 +9,10 @@ import yaml
 import argparse
 from easydict import EasyDict
 from engine import main
-from tools.model_downloader import download_models
+# from tools.model_downloader import download_models
 
 if __name__ == '__main__':
-    download_models()
+    # download_models()
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--output_dir", type=str, default=None)
