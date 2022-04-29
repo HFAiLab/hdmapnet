@@ -1,0 +1,4 @@
+[https]
+        proxy = http://vdi-proxy.high-flyer.cn:3128
+[http]
+        proxy = http://vdi-proxy.high-flyer.cn:3128

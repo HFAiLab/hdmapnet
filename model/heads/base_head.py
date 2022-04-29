@@ -1,5 +1,6 @@
 from torch import nn
-from model.utils.up_model import Up
+from model.base_models.up import Up
+
 
 class BaseHead(nn.Module):
     def __init__(self, out_dim):

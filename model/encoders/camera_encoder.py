@@ -1,7 +1,7 @@
 from efficientnet_pytorch import EfficientNet
 from torch import nn as nn
 
-from model.utils.up_model import Up
+from model.base_models.up import Up
 
 
 class CameraEncoder(nn.Module):

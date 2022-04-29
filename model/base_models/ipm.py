@@ -11,9 +11,6 @@ CAM_B = 4
 CAM_BR = 5
 
 
-# =========================================================
-# Projections
-# =========================================================
 def rotation_from_euler(rolls, pitchs, yaws, cuda=True):
     """
     Get rotation matrix
@@ -203,16 +200,16 @@ class PlaneEstimationModule(nn.Module):
     def __init__(self, N, C):
         super(PlaneEstimationModule, self).__init__()
         self.max_pool = nn.AdaptiveMaxPool2d(1)
-        self.linear = nn.Linear(N*C, 3)
+        self.linear = nn.Linear(N * C, 3)
 
         self.linear.weight.data.fill_(0.)
         self.linear.bias.data.fill_(0.)
 
     def forward(self, x):
         B, N, C, H, W = x.shape
-        x = x.view(B*N, C, H, W)
+        x = x.view(B * N, C, H, W)
         x = self.max_pool(x)
-        x = x.view(B, N*C)
+        x = x.view(B, N * C)
         x = self.linear(x)
         z, pitch, roll = x[:, 0], x[:, 1], x[:, 2]
         return z, pitch, roll
@@ -250,10 +247,10 @@ class IPM(nn.Module):
         self.tri_mask = self.tri_mask.bool()
 
     def mask_warped(self, warped_front_view_images):
-        warped_front_view_images[:, CAM_F, :, :self.w//2, :] *= 0  # CAM_FRONT
+        warped_front_view_images[:, CAM_F, :, :self.w // 2, :] *= 0  # CAM_FRONT
         warped_front_view_images[:, CAM_FL] *= self.flipped_tri_mask  # CAM_FRONT_LEFT
         warped_front_view_images[:, CAM_FR] *= ~self.tri_mask  # CAM_FRONT_RIGHT
-        warped_front_view_images[:, CAM_B, :, self.w//2:, :] *= 0  # CAM_BACK
+        warped_front_view_images[:, CAM_B, :, self.w // 2:, :] *= 0  # CAM_BACK
         warped_front_view_images[:, CAM_BL] *= self.tri_mask  # CAM_BACK_LEFT
         warped_front_view_images[:, CAM_BR] *= ~self.flipped_tri_mask  # CAM_BACK_RIGHT
         return warped_front_view_images
@@ -275,23 +272,25 @@ class IPM(nn.Module):
         else:
             planes = self.planes
 
-        images = images.reshape(B*N, H, W, C)
-        warped_front_view_images = ipm_from_parameters(images, planes, Ks, RTs, self.h, self.w, self.extrinsic, post_RTs)
+        images = images.reshape(B * N, H, W, C)
+        warped_front_view_images = ipm_from_parameters(images, planes, Ks, RTs, self.h, self.w, self.extrinsic,
+                                                       post_RTs)
         warped_front_view_images = warped_front_view_images.reshape((B, N, self.h, self.w, C))
         if self.visual:
             warped_front_view_images = self.mask_warped(warped_front_view_images)
 
         if self.visual:
-            warped_topdown = warped_front_view_images[:, CAM_F] + warped_front_view_images[:, CAM_B]  # CAM_FRONT + CAM_BACK
+            warped_topdown = warped_front_view_images[:, CAM_F] + warped_front_view_images[:,
+                                                                  CAM_B]  # CAM_FRONT + CAM_BACK
             warped_mask = warped_topdown == 0
-            warped_topdown[warped_mask] = warped_front_view_images[:, CAM_FL][warped_mask] + warped_front_view_images[:, CAM_FR][warped_mask]
+            warped_topdown[warped_mask] = warped_front_view_images[:, CAM_FL][warped_mask] + \
+                                          warped_front_view_images[:, CAM_FR][warped_mask]
             warped_mask = warped_topdown == 0
-            warped_topdown[warped_mask] = warped_front_view_images[:, CAM_BL][warped_mask] + warped_front_view_images[:, CAM_BR][warped_mask]
+            warped_topdown[warped_mask] = warped_front_view_images[:, CAM_BL][warped_mask] + \
+                                          warped_front_view_images[:, CAM_BR][warped_mask]
             return warped_topdown.permute(0, 3, 1, 2).contiguous()
         else:
             warped_topdown, _ = warped_front_view_images.max(1)
             warped_topdown = warped_topdown.permute(0, 3, 1, 2).contiguous()
             warped_topdown = warped_topdown.view(B, C, self.h, self.w)
             return warped_topdown
-
-

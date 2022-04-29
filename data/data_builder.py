@@ -1,9 +1,9 @@
 import torch
 from torch.utils.data import DistributedSampler
 from ffrecord.torch import DataLoader
+from hfai import datasets
 from .image import Transform
 
-from hfai import datasets
 
 def compile_data(data_conf):
     version = data_conf['version'].split('-')[-1]
