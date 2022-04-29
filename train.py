@@ -1,17 +1,14 @@
-import hfai_env
-
-from engine import main
-
-hfai_env.set_env("hdmn")
 import hfai
 from torch.multiprocessing import Process
 
 hfai.client.bind_hf_except_hook(Process)
-import argparse
+
 from pathlib import Path
 import torch
 import yaml
+import argparse
 from easydict import EasyDict
+from engine import main
 from tools.model_downloader import download_models
 
 if __name__ == '__main__':

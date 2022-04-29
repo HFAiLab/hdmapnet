@@ -1,8 +1,3 @@
-import hfai_env
-
-from engine import main
-
-hfai_env.set_env("hdmn")
 import hfai
 from torch.multiprocessing import Process
 
@@ -12,6 +7,7 @@ from pathlib import Path
 import torch
 import yaml
 from easydict import EasyDict
+from engine import main
 
 if __name__ == '__main__':
 
