@@ -1,5 +1,4 @@
 from torch import nn
-import torch
 from .instance_loss import InstanceLoss
 from .direction_loss import DirectionLoss
 from .semantic_loss import SemanticLoss
